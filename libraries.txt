@@ -1,0 +1,2 @@
+# Parts libraries this one uses, beside this repository (CI clones them there).
+../vequir-standard/library
