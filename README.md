@@ -33,6 +33,11 @@ slots from them. [vequir-unit](https://github.com/anroleroux/vequir-unit)'s
 PB6 places `battery_holders/pack_3x2`. A change here moves it: rebuild it
 before pushing, and push on the same branch name.
 
+Each item's page lists, under "Used in", the scripts that place it in the
+other repositories: `used-by.txt` names vequir-unit's site, and the page
+reads its `uses.json` (which every site publishes) in the browser. When
+another repository starts using this library, add its site there.
+
 ## Working on it
 
 Clone neoBotics (the tool) and the libraries `libraries.txt` names beside
