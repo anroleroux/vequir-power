@@ -1,6 +1,6 @@
 # vequir-power
 
-VequIR's battery holders and packs, as a [neoBotics](https://github.com/anroleroux/neoBotics)
+VequIR's battery holders and packs, and the protection boards that guard them, as a [neoBotics](https://github.com/anroleroux/neoBotics)
 parts library: the pack assemblies and the parts they are made of, written as
 CadQuery B-rep code from plain-language descriptions and built and checked as
 exact solids.
@@ -15,6 +15,7 @@ Product page: **[anroleroux.co.za/vequir-power](https://anroleroux.co.za/vequir-
 | `battery_holders/single_18650_holder/body` | part: the open plastic frame that cradles one 18650 |
 | `battery_holders/end_strip` | part: the strip across one end of six holders, with mounting tabs |
 | `battery_holders/pack_3x2` | assembly: six single holders, 3 × 2, joined by two end strips and 24 M1.2 screws |
+| `protection_boards/bms_3s_20a` | part: DIY Electronics' 3S Li-ion protection module (BMS), 20 A, 64 × 20 × 3.4 mm |
 
 ```
 library/<category>/category.md                     "# Title", then a blurb
