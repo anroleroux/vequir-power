@@ -13,8 +13,8 @@ Assumptions where the description is silent:
 - 1.5 mm thick, as the strip: an M1.2 x 6 screw, flush in its countersink,
   then reaches 4.5 mm into the pillar's 5.3 mm tap hole;
 - 3.4 mm wide: the 2.4 mm countersink with 0.5 mm of material either side
-  (wider than the 2.55 mm pillar it sits on);
-- two countersunk holes, as far apart as the pillars they sit on (7.45 mm) and
+  (wider than the 2.15 mm pillar it sits on);
+- two countersunk holes, as far apart as the pillars they sit on (7.85 mm) and
   centred on the beam, sized as the strip's: 1.3 mm clearance and a
   countersink matching the head with 0.05 mm radial clearance, opening on
   the top, where the board rests, so the heads sit flush under it;

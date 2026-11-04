@@ -47,13 +47,14 @@ Assumptions where the description is silent:
   slot's two (5 mm either side of the centre) and the outer slots' inside
   ends (16 mm either side), a pillar at the top and one at the bottom of
   each, flush with the strip's top and bottom edges (their tap holes
-  1.275 mm in from the edge, 7.45 mm apart); they are square, the holder's 0.95 mm M1.2 tap
-  drill plus a 0.8 mm wall (two 0.4 mm perimeters) on each side, so 2.55 mm
+  1.075 mm in from the edge, 7.85 mm apart); they are square, the holder's 0.95 mm M1.2 tap
+  drill plus a 0.6 mm wall on each side (thin, but enough round an M1.2
+  thread formed in plastic), so 2.15 mm
   across; they run solid from the strip's back to 0.4 mm past the tabs'
   ends (5.3 mm), filling any corner of a slot they overlap, and the tap
   hole runs right through, so the screw's thread is formed in it; the
-  lower four merge with the tabs' ends and keep 0.5 mm to the tabs'
-  countersinks, and the outer ones keep 1.2 mm to the strip's countersinks;
+  lower four merge with the tabs' ends and keep 0.7 mm to the tabs'
+  countersinks, and the outer ones keep 1.4 mm to the strip's countersinks;
 - square corners, no fillets;
 - modelled as it is bolted on: its back on x = 0 against the holders' end
   faces, the countersinks opening on +x, centred across y, standing on z = 0
@@ -89,7 +90,7 @@ tab_ys = [side * holder.width / 2 for side in (1, -1)]  # the middle joints, wit
 tab_top = tab_thickness  # the tabs stand on z = 0; their countersinks open here
 tab_hole_x = thickness + tab_reach / 2
 tab_hole_offsets = [-tab_width / 4, tab_width / 4]  # along y, from each tab's centre
-pillar_wall = 0.8  # round the tap hole: two 0.4 mm perimeters
+pillar_wall = 0.6  # round the tap hole
 pillar_above_tabs = 0.4  # past the tabs' ends, along x
 pillar_tap = holder.screw_tap_drill  # 0.95 mm, M1.2
 pillar_side = pillar_tap + 2 * pillar_wall  # square
