@@ -215,5 +215,5 @@ regions = {
         or abs(abs(f.Center().x) - (end_wall_outside + slot)) < 1e-6),
 }
 
-if "show_object" in globals():  # CQ-editor (load_part runs under neobotics only)
+if "show_object" in globals():  # CQ-editor (load_part runs under the CAD tool only)
     show_object(result, name="part")

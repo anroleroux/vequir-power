@@ -12,8 +12,8 @@ from pathlib import Path
 
 import pytest
 
-from neobotics.catalog import discover_all
-from neobotics.part import build_part
+from cad.catalog import discover_all
+from cad.part import build_part
 
 ROOT = Path(__file__).resolve().parents[1]
 LIBRARY = ROOT / "library"
@@ -27,7 +27,8 @@ def _summary(result):
 def test_the_library_holds_the_holders_strips_and_packs():
     assert sorted(e.designation for e in discover_all(ROOT / "products")) == [
         "battery_holders/end_strip", "battery_holders/pack_3x2",
-        "battery_holders/single_18650_holder", "battery_holders/single_18650_holder/body"]
+        "battery_holders/single_18650_holder", "battery_holders/single_18650_holder/body",
+        "protection_boards/bms_3s_20a"]
 
 
 def test_the_single_18650_holder_cradles_its_cell(tmp_path):
@@ -91,3 +92,12 @@ def test_the_pack_joins_six_holders_with_two_strips(tmp_path):
     clashes = summary["interference"]
     assert len(clashes) == 24
     assert all("screw_" in c["b"] and ("upper_" in c["a"] or "lower_" in c["a"]) for c in clashes)
+
+
+def test_the_3s_bms_is_the_listed_size_with_its_pads(tmp_path):
+    """DIY Electronics' 3S protection module: 64 x 20 x 3.4 mm, a B- and a P-
+    pad at the ends, and three balance taps."""
+    summary = _summary(build_part(LIBRARY / "protection_boards/bms_3s_20a/part.py", tmp_path / "out"))
+    assert summary["bounding_box"]["size"] == pytest.approx([64.0, 20.0, 3.4])
+    assert {k: v["count"] for k, v in summary["regions"].items()} == {
+        "b_minus_pad": 1, "p_minus_pad": 1, "balance_pads": 3, "bottom": 1}

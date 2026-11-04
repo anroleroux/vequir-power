@@ -1,7 +1,7 @@
 # vequir-power
 
-VequIR's battery holders and packs, as a [neoBotics](https://github.com/anroleroux/neoBotics)
-parts library: the pack assemblies and the parts they are made of, written as
+VequIR's battery holders and packs, and the protection boards that guard them, as a parts library for the
+[CAD tool](https://github.com/anroleroux/vequir-standard/tree/main/tools/cad): the pack assemblies and the parts they are made of, written as
 CadQuery B-rep code from plain-language descriptions and built and checked as
 exact solids.
 
@@ -15,6 +15,7 @@ Product page: **[anroleroux.co.za/vequir-power](https://anroleroux.co.za/vequir-
 | `battery_holders/single_18650_holder/body` | part: the open plastic frame that cradles one 18650 |
 | `battery_holders/end_strip` | part: the strip across one end of six holders, with mounting tabs |
 | `battery_holders/pack_3x2` | assembly: six single holders, 3 × 2, joined by two end strips and 24 M1.2 screws |
+| `protection_boards/bms_3s_20a` | part: DIY Electronics' 3S Li-ion protection module (BMS), 20 A, 64 × 20 × 3.4 mm |
 
 ```
 library/<category>/category.md                     "# Title", then a blurb
@@ -40,31 +41,30 @@ another repository starts using this library, add its site there.
 
 ## Working on it
 
-Clone neoBotics (the tool) and the libraries `libraries.txt` names beside
-this repository, install neobotics, and run everything from this
-repository's root:
+Clone the libraries `libraries.txt` names beside this repository, install
+the CAD tool (it comes with vequir-standard, under `tools/cad/`),
+and run everything from this repository's root:
 
 ```bash
-git clone https://github.com/anroleroux/neoBotics ../neoBotics
 git clone https://github.com/anroleroux/vequir-standard ../vequir-standard
 python -m venv .venv && source .venv/bin/activate
-pip install -e "../neoBotics[dev]"
+pip install -e "../vequir-standard/tools/cad[dev]"
 
 python -m pytest -q tests                     # checks of the real parts
-neobotics build library/battery_holders/pack_3x2      # one assembly
-neobotics site --out results --site site      # every part, then the pages
+cad build library/battery_holders/pack_3x2      # one assembly
+cad site --out results --site site      # every part, then the pages
 ```
 
 `results/` and `site/` are build output and git-ignored. In a Claude Code
-session, the `neobotics-part` skill (`.claude/skills/neobotics-part/`) takes
+session, the `cad-part` skill (`.claude/skills/cad-part/`) takes
 a designation plus modelling instructions through the same steps.
 
 ## CI and the product page
 
 `.github/workflows/cad.yml` runs on every push to `main` and `claude/**`. It
-clones neoBotics and the libraries this repository uses beside the checkout
+clones the libraries this repository uses beside the checkout
 (the branch of the same name when it exists there, else the default branch),
-runs the tests, builds every part, and deploys the site to GitHub Pages:
+installs the CAD tool from vequir-standard's clone, runs the tests, builds every part, and deploys the site to GitHub Pages:
 **anroleroux.co.za/vequir-power**, the product page. A part that fails to
 build fails the job.
 Settings → Pages → Source must be GitHub Actions.
