@@ -100,4 +100,5 @@ def test_the_3s_bms_is_the_listed_size_with_its_pads(tmp_path):
     summary = _summary(build_part(LIBRARY / "protection_boards/bms_3s_20a/part.py", tmp_path / "out"))
     assert summary["bounding_box"]["size"] == pytest.approx([64.0, 20.0, 3.4])
     assert {k: v["count"] for k, v in summary["regions"].items()} == {
-        "b_minus_pad": 1, "p_minus_pad": 1, "balance_pads": 3, "bottom": 1}
+        "b_minus_pad": 1, "p_minus_pad": 1, "p_plus_pad": 1, "balance_pads": 3,
+        "terminal_holes": 6, "bottom": 1}
