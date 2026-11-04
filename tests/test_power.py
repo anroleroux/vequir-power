@@ -84,14 +84,21 @@ def test_the_end_strip_spans_three_holders_and_two_rows(tmp_path):
 
 
 def test_the_pack_joins_six_holders_with_two_strips(tmp_path):
-    """Six holders in two rows of three, a strip and twelve screws at each end:
+    """Six holders in two rows of three, a strip and twelve screws at each end,
+    and the BMS on the front strip's pillars:
     the only overlaps are the 24 screws forming their threads in the holders."""
     summary = _summary(build_part(LIBRARY / "battery_holders/pack_3x2/assembly.py", tmp_path / "out"))
     names = [c["name"] for c in summary["components"]]
     assert sum("upper_" in n or "lower_" in n for n in names) == 6
     assert sum("strip_" in n for n in names) == 2
     assert sum("screw_" in n for n in names) == 24
-    assert summary["bounding_box"]["size"][1:] == pytest.approx([63.0, 40.0])
+    assert sum("bms" in n for n in names) == 1
+    # the 64 mm BMS overhangs the 63 mm pack by 0.5 mm each side
+    assert summary["bounding_box"]["size"][1:] == pytest.approx([64.0, 40.0])
+    # the BMS rests on the front strip's four square pillars, their tap holes open
+    bms = [c for c in summary["contacts"] if "bms" in c["a"] + c["b"]]
+    assert len(bms) == 1 and "strip_front" in bms[0]["a"] + bms[0]["b"]
+    assert bms[0]["area_mm2"] == pytest.approx(4 * (2.55 ** 2 - math.pi * 0.95 ** 2 / 4), rel=1e-3)
     clashes = summary["interference"]
     assert len(clashes) == 24
     assert all("screw_" in c["b"] and ("upper_" in c["a"] or "lower_" in c["a"]) for c in clashes)

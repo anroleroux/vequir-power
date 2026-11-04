@@ -4,7 +4,8 @@ Six single 18650 holders, each with its cell and its two clips: three side by
 side along y, in two rows bottom to bottom, the lower row turned upside down
 about x. An end strip across each end face joins them, with twelve M1.2 x 6
 countersunk screws at each end, flush in the strip, into the holders' tap
-holes. Every piece comes from the parts library through load_library, so the
+holes. The 3S BMS is mounted on the front strip's four pillars, its
+underside on their tops. Every piece comes from the parts library through load_library, so the
 pack follows any change to the holder, the strip or the screw.
 
 The summary's interference lists each screw against its holder: that is the
@@ -17,7 +18,12 @@ Assumptions where the description is silent:
   stay at the bottom and stick out away from the holders at both ends;
 - the screws in the strips' tabs (which fix the pack to something else) are
   left out; the tabs' footprints and holes are exported (tab_z, tab_top,
-  tab_length, tab_width, tab_centres, tab_holes) for what the pack is fixed to.
+  tab_length, tab_width, tab_centres, tab_holes) for what the pack is fixed to;
+- the BMS stands on the front (+x) strip's pillars, its parts facing away
+  from the holders, its length along y and its width along z, centred on
+  the pillars (y = 0, the joint between the rows); its pads' B- / P- end is
+  at -y; how it is held to the pillars is left open, as the board has no
+  holes there.
 """
 import cadquery as cq
 
@@ -25,6 +31,7 @@ holder = load_library("battery_holders/single_18650_holder")  # body, cell and c
 body = load_library("battery_holders/single_18650_holder/body")  # length, width, height
 strip = load_library("battery_holders/end_strip")  # points, thickness, joint
 screw = load_library("fasteners/m1_2x6_countersunk")  # standing up: tip on z = 0
+bms = load_library("protection_boards/bms_3s_20a")  # lying flat, its underside on z = 0
 
 joint = body.height  # where the two rows' bottoms meet
 end = body.length / 2  # each end face, from the centre
@@ -50,6 +57,15 @@ for side, label in ((1, "front"), (-1, "back")):
                    loc=cq.Location(cq.Vector(head - side * screw.length, side * y, strip_z + z),
                                    cq.Vector(0, 1, 0), side * 90),
                    color=screw_color)
+
+# the BMS on the front strip's pillars: its x along y, its y along z and its
+# z (up from its underside) along +x, away from the holders
+pillar_y = sum(y for y, _ in strip.pillar_points) / len(strip.pillar_points)
+pillar_z = strip_z + sum(z for _, z in strip.pillar_points) / len(strip.pillar_points)
+bms_x = end + strip.pillar_top  # its underside, on the pillars' tops
+result.add(bms.result, name="bms",
+           loc=cq.Location(cq.Vector(bms_x, pillar_y, pillar_z), cq.Vector(1, 1, 1), 120),
+           color=cq.Color(0.10, 0.45, 0.20))
 
 # where the strips' tabs are, in the pack's own coordinates, for whatever the
 # pack is fixed down to: each tab's footprint (its underside, a rectangle
