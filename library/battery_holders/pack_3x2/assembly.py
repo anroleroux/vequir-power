@@ -65,5 +65,5 @@ tab_holes = [(side * (end + strip.tab_hole_x), side * (y + dy))
 
 regions = {}
 
-if "show_object" in globals():  # CQ-editor (load_part runs under neobotics only)
+if "show_object" in globals():  # CQ-editor (load_part runs under the CAD tool only)
     show_object(result, name="pack_3x2")
