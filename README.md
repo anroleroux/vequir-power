@@ -1,6 +1,6 @@
 # vequir-power
 
-VequIR's battery holders and packs, and the protection boards that guard them, as a [neoBotics](https://github.com/anroleroux/neoBotics)
+VequIR's battery holders and packs, and the protection boards that guard them, as a [neoBotics](https://github.com/anroleroux/vequir-standard/tree/main/neobotics)
 parts library: the pack assemblies and the parts they are made of, written as
 CadQuery B-rep code from plain-language descriptions and built and checked as
 exact solids.
@@ -41,15 +41,14 @@ another repository starts using this library, add its site there.
 
 ## Working on it
 
-Clone neoBotics (the tool) and the libraries `libraries.txt` names beside
-this repository, install neobotics, and run everything from this
-repository's root:
+Clone the libraries `libraries.txt` names beside this repository, install
+neobotics (the tool, which comes with vequir-standard under `neobotics/`),
+and run everything from this repository's root:
 
 ```bash
-git clone https://github.com/anroleroux/neoBotics ../neoBotics
 git clone https://github.com/anroleroux/vequir-standard ../vequir-standard
 python -m venv .venv && source .venv/bin/activate
-pip install -e "../neoBotics[dev]"
+pip install -e "../vequir-standard/neobotics[dev]"
 
 python -m pytest -q tests                     # checks of the real parts
 neobotics build library/battery_holders/pack_3x2      # one assembly
@@ -63,9 +62,9 @@ a designation plus modelling instructions through the same steps.
 ## CI and the product page
 
 `.github/workflows/cad.yml` runs on every push to `main` and `claude/**`. It
-clones neoBotics and the libraries this repository uses beside the checkout
+clones the libraries this repository uses beside the checkout
 (the branch of the same name when it exists there, else the default branch),
-runs the tests, builds every part, and deploys the site to GitHub Pages:
+installs neobotics from vequir-standard's clone, runs the tests, builds every part, and deploys the site to GitHub Pages:
 **anroleroux.co.za/vequir-power**, the product page. A part that fails to
 build fails the job.
 Settings → Pages → Source must be GitHub Actions.
