@@ -13,7 +13,9 @@ two middle screw clusters (where neighbouring holders meet), each as wide as
 the strip and long enough for an M1.2 countersunk head, with two side by
 side; their countersinks are on the inside of the bend, the tabs' tops.
 Three slotted holes, one in each gap between the screw clusters, save
-material.
+material. Four small pillars stand off the strip's front, the way the tabs
+stick out, 0.4 mm further than the tabs, each just thick enough to take an
+M1.2 thread, with a tap hole for the screw.
 
 Assumptions where the description is silent:
 - 1.5 mm thick: the 6 mm screw, flush in its countersink, then reaches
@@ -35,10 +37,17 @@ Assumptions where the description is silent:
   countersink keeps 0.5 mm of material to both; its two holes are a quarter
   and three quarters across it; they go up through the tab, along z, and
   the countersinks open on its top;
-- the material-saving holes are slots with round ends, 10 mm long and 6 mm
+- the material-saving holes are slots with round ends, 7 mm long and 6 mm
   tall, centred in the gaps between the clusters (at the holders' centres
-  and the strip's half height): 2 mm of strip above and below each, and
-  about 2.5 mm to the nearest countersink;
+  and the strip's half height): 2 mm of strip above and below each; they
+  were 10 mm long, shortened to make room for the pillars;
+- the pillars sit on the strip's half height, one either side of each outer
+  slot (four in all), each centred in the gap between the slot's end and the
+  nearest countersink, about 0.7 mm clear of both; they are round, the
+  holder's 0.95 mm M1.2 tap drill plus a 0.8 mm wall (two 0.4 mm
+  perimeters), so 2.55 mm across; they reach 0.4 mm past the tabs' ends,
+  5.3 mm from the strip's back, and the tap hole runs from their tops
+  through the strip, so the screw's thread is formed in it;
 - square corners, no fillets;
 - modelled as it is bolted on: its back on x = 0 against the holders' end
   faces, the countersinks opening on +x, centred across y, standing on z = 0
@@ -62,7 +71,7 @@ length = columns * holder.width  # along y
 joint = width / 2  # the plane where the two rows' bottoms meet
 
 tab_margin = 0.5  # round each tab countersink, to the strip's front and to the tab's end
-saving_slot_length = 10.0  # along y, round ends included
+saving_slot_length = 7.0  # along y, round ends included
 saving_slot_height = 6.0  # along z
 
 countersink_radius = screw.head_diameter / 2 + head_clearance
@@ -74,6 +83,11 @@ tab_ys = [side * holder.width / 2 for side in (1, -1)]  # the middle joints, wit
 tab_top = tab_thickness  # the tabs stand on z = 0; their countersinks open here
 tab_hole_x = thickness + tab_reach / 2
 tab_hole_offsets = [-tab_width / 4, tab_width / 4]  # along y, from each tab's centre
+pillar_wall = 0.8  # round the tap hole: two 0.4 mm perimeters
+pillar_above_tabs = 0.4  # past the tabs' ends, along x
+pillar_tap = holder.screw_tap_drill  # 0.95 mm, M1.2
+pillar_diameter = pillar_tap + 2 * pillar_wall
+pillar_top = thickness + tab_reach + pillar_above_tabs  # from the strip's back, along x
 column_ys = [(c - (columns - 1) / 2) * holder.width for c in range(columns)]
 points = [
     (column_y + side * holder.screw_y, joint + row * holder.screw_inset)
@@ -82,6 +96,15 @@ points = [
     for row in (1, -1)
 ]
 
+# the pillars: centred between each outer slot's ends and the nearest countersinks
+outer_y = column_ys[-1]
+slot_end = saving_slot_length / 2
+inner_gap = (max(abs(y) for y, _ in points if abs(y) < outer_y) + countersink_radius,
+             outer_y - slot_end)
+outer_gap = (outer_y + slot_end,
+             min(abs(y) for y, _ in points if abs(y) > outer_y) - countersink_radius)
+pillar_ys = [side * sum(gap) / 2 for side in (-1, 1) for gap in (inner_gap, outer_gap)]
+pillar_z = width / 2  # the strip's half height
 
 
 def countersunk_hole(face_point, out, depth):
@@ -118,6 +141,14 @@ saving_slots = (
 result = plate.cut(saving_slots)
 for tab in tabs:
     result = result.union(tab)
+pillars = (cq.Workplane("YZ", origin=(thickness, 0, 0))
+           .pushPoints([(y, pillar_z) for y in pillar_ys])
+           .circle(pillar_diameter / 2).extrude(pillar_top - thickness))
+result = result.union(pillars)
+tap_holes = (cq.Workplane("YZ")
+             .pushPoints([(y, pillar_z) for y in pillar_ys])
+             .circle(pillar_tap / 2).extrude(pillar_top))
+result = result.cut(tap_holes)
 for cut in cuts:
     result = result.cut(cq.Workplane("XY").add(cut))
 
@@ -129,6 +160,10 @@ regions = {
         lambda f: f.BoundingBox().xlen < thickness and f.BoundingBox().zlen > thickness),
     "tab_countersinks": result.faces("%CONE").filter(  # on the tabs' tops
         lambda f: f.BoundingBox().zlen < tab_thickness),
+    "pillar_tops": result.faces(">X"),  # where whatever the screws hold sits
+    "pillar_holes": result.faces("%CYLINDER").filter(  # the M1.2 tap holes
+        lambda f: abs(f.BoundingBox().zlen - pillar_tap) < 1e-3
+        and abs(f.BoundingBox().xlen - pillar_top) < 1e-3),
 }
 
 if "show_object" in globals():  # CQ-editor

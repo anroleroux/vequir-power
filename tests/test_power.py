@@ -71,13 +71,16 @@ def test_the_end_strip_spans_three_holders_and_two_rows(tmp_path):
     """The strip: three holders long, twelve countersinks for the M1.2 screws,
     thin enough that a 6 mm screw flush in it reaches 4.5 mm into the holder."""
     strip = _summary(build_part(LIBRARY / "battery_holders/end_strip/part.py", tmp_path / "strip"))
-    # 1.5 mm strip plus the tabs, 3.4 mm out past its front
-    assert strip["bounding_box"]["size"] == pytest.approx([1.5 + 3.4, 3 * 21.0, 10.0])
+    # 1.5 mm strip plus the tabs, 3.4 mm out past its front, and the pillars 0.4 mm past them
+    assert strip["bounding_box"]["size"] == pytest.approx([1.5 + 3.4 + 0.4, 3 * 21.0, 10.0])
     assert strip["regions"]["countersinks"]["count"] == 12
     assert strip["regions"]["tab_countersinks"]["count"] == 4  # two per tab
-    # three material-saving slots, 10 x 6 mm with round ends, through the 1.5 mm strip
-    full = 1.5 * 3 * 21.0 * 10.0 + 2 * 3.4 * 10.0 * 1.5
-    assert strip["volume_mm3"] < full - 3 * (4 * 6 + math.pi * 9) * 1.5
+    # four pillars, 2.55 mm across, each with a 0.95 mm M1.2 tap hole
+    assert strip["regions"]["pillar_tops"]["count"] == 4
+    assert strip["regions"]["pillar_holes"]["count"] == 4
+    # three material-saving slots, 7 x 6 mm with round ends, through the 1.5 mm strip
+    full = 1.5 * 3 * 21.0 * 10.0 + 2 * 3.4 * 10.0 * 1.5 + 4 * math.pi * (2.55 / 2) ** 2 * 3.8
+    assert strip["volume_mm3"] < full - 3 * (1 * 6 + math.pi * 9) * 1.5
 
 
 def test_the_pack_joins_six_holders_with_two_strips(tmp_path):
