@@ -26,7 +26,7 @@ def _summary(result):
 
 def test_the_library_holds_the_holders_strips_and_packs():
     assert sorted(e.designation for e in discover_all(ROOT / "products")) == [
-        "battery_holders/end_strip", "battery_holders/pack_3x2",
+        "battery_holders/clamp_beam", "battery_holders/end_strip", "battery_holders/pack_3x2",
         "battery_holders/single_18650_holder", "battery_holders/single_18650_holder/body",
         "protection_boards/bms_3s_20a"]
 
@@ -83,25 +83,37 @@ def test_the_end_strip_spans_three_holders_and_two_rows(tmp_path):
     assert strip["volume_mm3"] < full - 3 * (4 * 6 + math.pi * 9) * 1.5
 
 
+def test_the_clamp_beam_spans_the_bms_on_two_pillars(tmp_path):
+    """As long as the BMS is wide, 1.5 mm thick, two M1.2 countersinks 6 mm
+    apart (the pillars' spacing)."""
+    beam = _summary(build_part(LIBRARY / "battery_holders/clamp_beam/part.py", tmp_path / "beam"))
+    assert beam["bounding_box"]["size"] == pytest.approx([20.0, 3.4, 1.5])
+    assert beam["regions"]["countersinks"]["count"] == 2
+
+
 def test_the_pack_joins_six_holders_with_two_strips(tmp_path):
     """Six holders in two rows of three, a strip and twelve screws at each end,
-    and the BMS on the front strip's pillars:
+    two clamping beams screwed onto the front strip's pillars, and the BMS on
+    the beams:
     the only overlaps are the 24 screws forming their threads in the holders."""
     summary = _summary(build_part(LIBRARY / "battery_holders/pack_3x2/assembly.py", tmp_path / "out"))
     names = [c["name"] for c in summary["components"]]
     assert sum("upper_" in n or "lower_" in n for n in names) == 6
     assert sum("strip_" in n for n in names) == 2
-    assert sum("screw_" in n for n in names) == 24
+    assert sum("screw_" in n for n in names) == 24 + 4
+    assert sum("beam_" in n and "screw" not in n for n in names) == 2
     assert sum("bms" in n for n in names) == 1
     # the 64 mm BMS overhangs the 63 mm pack by 0.5 mm each side
     assert summary["bounding_box"]["size"][1:] == pytest.approx([64.0, 40.0])
-    # the BMS rests on the front strip's four square pillars, their tap holes open
-    bms = [c for c in summary["contacts"] if "bms" in c["a"] + c["b"]]
-    assert len(bms) == 1 and "strip_front" in bms[0]["a"] + bms[0]["b"]
-    assert bms[0]["area_mm2"] == pytest.approx(4 * (2.55 ** 2 - math.pi * 0.95 ** 2 / 4), rel=1e-3)
+    # each beam sits on two of the front strip's pillars, and the BMS on both beams
+    contacts = {(c["a"].split("/")[-1], c["b"].split("/")[-1]) for c in summary["contacts"]}
+    assert {("strip_front", "beam_1"), ("strip_front", "beam_2"),
+            ("beam_1", "bms"), ("beam_2", "bms")} <= contacts
     clashes = summary["interference"]
-    assert len(clashes) == 24
-    assert all("screw_" in c["b"] and ("upper_" in c["a"] or "lower_" in c["a"]) for c in clashes)
+    # each screw forming its thread: 24 in the holders, 4 in the front strip's pillars
+    assert len(clashes) == 28
+    assert all("screw_" in c["b"] for c in clashes)
+    assert sum("strip_front" in c["a"] and "screw_beam_" in c["b"] for c in clashes) == 4
 
 
 def test_the_3s_bms_is_the_listed_size_with_its_pads(tmp_path):

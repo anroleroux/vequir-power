@@ -4,12 +4,15 @@ Six single 18650 holders, each with its cell and its two clips: three side by
 side along y, in two rows bottom to bottom, the lower row turned upside down
 about x. An end strip across each end face joins them, with twelve M1.2 x 6
 countersunk screws at each end, flush in the strip, into the holders' tap
-holes. The 3S BMS is mounted on the front strip's four pillars, its
-underside on their tops. Every piece comes from the parts library through load_library, so the
+holes. Two clamping beams screw onto the front strip's four pillars, one
+across each pair, with an M1.2 x 6 countersunk screw into each pillar, and
+the 3S BMS rests on the beams, which stretch from one side of it to the
+other. Every piece comes from the parts library through load_library, so the
 pack follows any change to the holder, the strip or the screw.
 
-The summary's interference lists each screw against its holder: that is the
-screw's 1.2 mm shank forming its thread in the 0.95 mm tap hole, as intended.
+The summary's interference lists each screw against its holder or, for the
+beams' four, against the front strip's pillars: that is the screw's 1.2 mm
+shank forming its thread in the 0.95 mm tap hole, as intended.
 
 Assumptions where the description is silent:
 - the pack stands on z = 0 on the lower row's open tops, the joint between
@@ -19,11 +22,13 @@ Assumptions where the description is silent:
 - the screws in the strips' tabs (which fix the pack to something else) are
   left out; the tabs' footprints and holes are exported (tab_z, tab_top,
   tab_length, tab_width, tab_centres, tab_holes) for what the pack is fixed to;
-- the BMS stands on the front (+x) strip's pillars, its parts facing away
-  from the holders, its length along y and its width along z, centred on
-  the pillars (y = 0, the joint between the rows); its pads' B- / P- end is
-  at -y; how it is held to the pillars is left open, as the board has no
-  holes there.
+- the beams run along z, across the board, one on each pair of pillars
+  (at the pillars' y), centred on them, their countersinks facing away from
+  the holders, under the board;
+- the BMS stands on the beams, its parts facing away from the holders, its
+  length along y and its width along z, centred on the pillars (y = 0, the
+  joint between the rows); its MOSFET and B- end is at -y; the clamps that
+  will hold it to the beams' ends are left for later.
 """
 import cadquery as cq
 
@@ -32,6 +37,7 @@ body = load_library("battery_holders/single_18650_holder/body")  # length, width
 strip = load_library("battery_holders/end_strip")  # points, thickness, joint
 screw = load_library("fasteners/m1_2x6_countersunk")  # standing up: tip on z = 0
 bms = load_library("protection_boards/bms_3s_20a")  # lying flat, its underside on z = 0
+beam = load_library("battery_holders/clamp_beam")  # along x, its countersinks on top
 
 joint = body.height  # where the two rows' bottoms meet
 end = body.length / 2  # each end face, from the centre
@@ -58,13 +64,26 @@ for side, label in ((1, "front"), (-1, "back")):
                                    cq.Vector(0, 1, 0), side * 90),
                    color=screw_color)
 
-# the BMS on the front strip's pillars: its x along y, its y along z and its
-# z (up from its underside) along +x, away from the holders
-pillar_y = sum(y for y, _ in strip.pillar_points) / len(strip.pillar_points)
+# the clamping beams on the front strip's pillars, along z, their tops (and the
+# countersinks) facing +x; then the BMS on the beams: its x along y, its y
+# along z and its z (up from its underside) along +x, away from the holders
+pillar_ys = sorted({y for y, _ in strip.pillar_points})
 pillar_z = strip_z + sum(z for _, z in strip.pillar_points) / len(strip.pillar_points)
-bms_x = end + strip.pillar_top  # its underside, on the pillars' tops
+beam_x = end + strip.pillar_top  # the beams' undersides, on the pillars' tops
+beam_top = beam_x + beam.thickness
+for i, y in enumerate(pillar_ys, start=1):
+    result.add(beam.result, name=f"beam_{i}",
+               loc=cq.Location(cq.Vector(beam_x, y, pillar_z), cq.Vector(0, 1, 0), 90),
+               color=strip_color)
+    # a screw into each pillar: head flush with the beam's top, along -x
+    for j, x in enumerate(beam.hole_xs, start=1):
+        result.add(screw.result, name=f"screw_beam_{i}_{j}",
+                   loc=cq.Location(cq.Vector(beam_top - screw.length, y, pillar_z - x),
+                                   cq.Vector(0, 1, 0), 90),
+                   color=screw_color)
 result.add(bms.result, name="bms",
-           loc=cq.Location(cq.Vector(bms_x, pillar_y, pillar_z), cq.Vector(1, 1, 1), 120),
+           loc=cq.Location(cq.Vector(beam_top, sum(pillar_ys) / len(pillar_ys), pillar_z),
+                           cq.Vector(1, 1, 1), 120),
            color=cq.Color(0.10, 0.45, 0.20))
 
 # where the strips' tabs are, in the pack's own coordinates, for whatever the
