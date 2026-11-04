@@ -75,16 +75,17 @@ def test_the_end_strip_spans_three_holders_and_two_rows(tmp_path):
     assert strip["bounding_box"]["size"] == pytest.approx([1.5 + 3.4 + 0.4, 3 * 21.0, 10.0])
     assert strip["regions"]["countersinks"]["count"] == 12
     assert strip["regions"]["tab_countersinks"]["count"] == 4  # two per tab
-    # four square pillars, 2.55 mm across, on the middle slot's corners, each with a 0.95 mm M1.2 tap hole
-    assert strip["regions"]["pillar_tops"]["count"] == 4
-    assert strip["regions"]["pillar_holes"]["count"] == 4
+    # eight square pillars, 2.55 mm across, at the middle slot's ends and the outer
+    # slots' inside ends, flush with the strip's edges, each with a 0.95 mm M1.2 tap hole
+    assert strip["regions"]["pillar_tops"]["count"] == 8
+    assert strip["regions"]["pillar_holes"]["count"] == 8
     # three material-saving slots, 10 x 6 mm with round ends, through the 1.5 mm strip
-    full = 1.5 * 3 * 21.0 * 10.0 + 2 * 3.4 * 10.0 * 1.5 + 4 * 2.55 ** 2 * 5.3
+    full = 1.5 * 3 * 21.0 * 10.0 + 2 * 3.4 * 10.0 * 1.5 + 8 * 2.55 ** 2 * 5.3
     assert strip["volume_mm3"] < full - 3 * (4 * 6 + math.pi * 9) * 1.5
 
 
 def test_the_clamp_beam_spans_the_bms_on_two_pillars(tmp_path):
-    """As long as the BMS is wide, 1.5 mm thick, two M1.2 countersinks 6 mm
+    """As long as the BMS is wide, 1.5 mm thick, two M1.2 countersinks 7.45 mm
     apart (the pillars' spacing)."""
     beam = _summary(build_part(LIBRARY / "battery_holders/clamp_beam/part.py", tmp_path / "beam"))
     assert beam["bounding_box"]["size"] == pytest.approx([20.0, 3.4, 1.5])

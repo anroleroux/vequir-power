@@ -16,4 +16,6 @@ clusters.
 Little square pillars stick out of the strip the same way the tabs stick
 out, 0.4 mm higher than the tabs, with just enough profile to take an M1.2
 thread, and holes for the screws. They sit on the four corners of the
-centre material-saving hole; the two near the tabs may touch them.
+centre material-saving hole and on the inside corners of the two outer
+ones, moved right out to the strip's top and bottom edges; the ones near
+the tabs may touch them.

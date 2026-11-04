@@ -4,8 +4,8 @@ Six single 18650 holders, each with its cell and its two clips: three side by
 side along y, in two rows bottom to bottom, the lower row turned upside down
 about x. An end strip across each end face joins them, with twelve M1.2 x 6
 countersunk screws at each end, flush in the strip, into the holders' tap
-holes. Two clamping beams screw onto the front strip's four pillars, one
-across each pair, with an M1.2 x 6 countersunk screw into each pillar, and
+holes. Two clamping beams screw onto the front strip's four middle pillars,
+one across each pair, with an M1.2 x 6 countersunk screw into each pillar, and
 the 3S BMS rests on the beams, which stretch from one side of it to the
 other. Every piece comes from the parts library through load_library, so the
 pack follows any change to the holder, the strip or the screw.
@@ -22,8 +22,8 @@ Assumptions where the description is silent:
 - the screws in the strips' tabs (which fix the pack to something else) are
   left out; the tabs' footprints and holes are exported (tab_z, tab_top,
   tab_length, tab_width, tab_centres, tab_holes) for what the pack is fixed to;
-- the beams run along z, across the board, one on each pair of pillars
-  (at the pillars' y), centred on them, their countersinks facing away from
+- the beams run along z, across the board, one on each of the middle pair
+  of pillars (at the middle slot's ends; the outer pillars are left free), centred on them, their countersinks facing away from
   the holders, under the board;
 - the BMS stands on the beams, its parts facing away from the holders, its
   length along y and its width along z, centred on the pillars (y = 0, the
@@ -67,8 +67,9 @@ for side, label in ((1, "front"), (-1, "back")):
 # the clamping beams on the front strip's pillars, along z, their tops (and the
 # countersinks) facing +x; then the BMS on the beams: its x along y, its y
 # along z and its z (up from its underside) along +x, away from the holders
-pillar_ys = sorted({y for y, _ in strip.pillar_points})
-pillar_z = strip_z + sum(z for _, z in strip.pillar_points) / len(strip.pillar_points)
+inner = min(abs(y) for y in strip.pillar_ys)
+pillar_ys = [y for y in strip.pillar_ys if abs(y) == inner]  # the middle slot's ends
+pillar_z = strip_z + sum(strip.pillar_zs) / len(strip.pillar_zs)
 beam_x = end + strip.pillar_top  # the beams' undersides, on the pillars' tops
 beam_top = beam_x + beam.thickness
 for i, y in enumerate(pillar_ys, start=1):

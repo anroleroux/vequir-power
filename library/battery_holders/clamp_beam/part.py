@@ -14,7 +14,7 @@ Assumptions where the description is silent:
   then reaches 4.5 mm into the pillar's 5.3 mm tap hole;
 - 3.4 mm wide: the 2.4 mm countersink with 0.5 mm of material either side
   (wider than the 2.55 mm pillar it sits on);
-- two countersunk holes, as far apart as the pillars they sit on (6 mm) and
+- two countersunk holes, as far apart as the pillars they sit on (7.45 mm) and
   centred on the beam, sized as the strip's: 1.3 mm clearance and a
   countersink matching the head with 0.05 mm radial clearance, opening on
   the top, where the board rests, so the heads sit flush under it;
@@ -33,8 +33,7 @@ margin = 0.5  # round each countersink, to the beam's sides
 length = bms.width  # along x, across the board
 width = 2 * (strip.countersink_radius + margin)  # along y
 
-pillar_zs = sorted({z for _, z in strip.pillar_points})
-hole_pitch = pillar_zs[-1] - pillar_zs[0]  # the pillars' spacing, across the strip
+hole_pitch = strip.pillar_zs[-1] - strip.pillar_zs[0]  # the pillars' spacing, across the strip
 hole_xs = [-hole_pitch / 2, hole_pitch / 2]
 
 result = cq.Workplane("XY").box(length, width, thickness, centered=(True, True, False))
