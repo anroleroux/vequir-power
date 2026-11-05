@@ -4,8 +4,9 @@ Six single 18650 holders, each with its cell and its two clips: three side by
 side along y, in two rows bottom to bottom, the lower row turned upside down
 about x. An end strip across each end face joins them, with twelve M1.2 x 6
 countersunk screws at each end, flush in the strip, into the holders' tap
-holes. Two clamping beams screw onto the front strip's four middle pillars,
-one across each pair, with an M1.2 x 6 countersunk screw into each pillar, and
+holes. Two clamping beams screw onto the front strip's pillars, one across
+each of two pairs (the middle slot's -y end and the +y outer slot's inside
+end), with an M1.2 x 6 countersunk screw into each pillar, and
 the 3S BMS rests on the beams, which stretch from one side of it to the
 other. Every piece comes from the parts library through load_library, so the
 pack follows any change to the holder, the strip or the screw.
@@ -22,11 +23,13 @@ Assumptions where the description is silent:
 - the screws in the strips' tabs (which fix the pack to something else) are
   left out; the tabs' footprints and holes are exported (tab_z, tab_top,
   tab_length, tab_width, tab_centres, tab_holes) for what the pack is fixed to;
-- the beams run along z, across the board, one on each of the middle pair
-  of pillars (at the middle slot's ends; the outer pillars are left free), centred on them, their countersinks facing away from
+- the beams run along z, across the board: the -y one on the pillars at
+  the middle slot's -y end (y = -5), the +y one on the pillars at the +y
+  outer slot's inside end (y = +16); the other four pillars are left free;
+  each beam is centred on its pillars, their countersinks facing away from
   the holders, under the board;
 - the BMS stands on the beams, its parts facing away from the holders, its
-  length along y and its width along z, centred on the pillars (y = 0, the
+  length along y and its width along z, centred on the strip (y = 0, the
   joint between the rows); its MOSFET and B- end is at -y; the clamps that
   will hold it to the beams' ends are left for later.
 """
@@ -68,7 +71,8 @@ for side, label in ((1, "front"), (-1, "back")):
 # countersinks) facing +x; then the BMS on the beams: its x along y, its y
 # along z and its z (up from its underside) along +x, away from the holders
 inner = min(abs(y) for y in strip.pillar_ys)
-pillar_ys = [y for y in strip.pillar_ys if abs(y) == inner]  # the middle slot's ends
+# the beams' pillars: the middle slot's -y end, and the next pair out on +y
+pillar_ys = [-inner, min(y for y in strip.pillar_ys if y > inner)]
 pillar_z = strip_z + sum(strip.pillar_zs) / len(strip.pillar_zs)
 beam_x = end + strip.pillar_top  # the beams' undersides, on the pillars' tops
 beam_top = beam_x + beam.thickness
@@ -83,7 +87,7 @@ for i, y in enumerate(pillar_ys, start=1):
                                    cq.Vector(0, 1, 0), 90),
                    color=screw_color)
 result.add(bms.result, name="bms",
-           loc=cq.Location(cq.Vector(beam_top, sum(pillar_ys) / len(pillar_ys), pillar_z),
+           loc=cq.Location(cq.Vector(beam_top, 0, pillar_z),
                            cq.Vector(1, 1, 1), 120),
            color=cq.Color(0.10, 0.45, 0.20))
 
