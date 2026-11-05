@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
     inputs:
       design:
-        description: 'a part directory holding description.md, e.g. library/battery_holders/end_strip, to generate with Claude'
+        description: 'a part directory holding description.md, e.g. library/brackets/end_strip, to generate with Claude'
         required: false
         default: ''
 

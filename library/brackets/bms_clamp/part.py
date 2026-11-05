@@ -26,9 +26,9 @@ Assumptions where the description is silent:
 """
 import cadquery as cq
 
-beam = load_library("battery_holders/clamp_beam")  # post_length, board_clearance, width
-strip = load_library("battery_holders/end_strip")  # countersunk_hole, countersink_radius
-screw = load_library("fasteners/m1_2x3_countersunk")  # length
+beam = load_library("brackets/clamp_beam")  # post_length, board_clearance, width
+strip = load_library("brackets/end_strip")  # countersunk_hole, countersink_radius
+screw = load_library("hardware/m1_2x3_countersunk")  # length
 
 # parameters, in mm
 thickness = 1.0  # along z

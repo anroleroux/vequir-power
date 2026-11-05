@@ -16,11 +16,11 @@ hole in from both end faces, for the screws of a strip bolted on across the
 end. A filleted cut-out in the top edge of both side walls, symmetric about
 the middle, saves material. Change wall and the outside grows with it; the
 cavity keeps the cell's size, which comes from the standard 18650 cell
-(batteries/cell_18650), and the slots the clip's thickness, so the body
+(power/cell_18650), and the slots the clip's thickness, so the body
 follows a change to either.
 
 Assumptions where the description is silent:
-- the cavity is sized for the standard cell, batteries/cell_18650 (18.4 mm
+- the cavity is sized for the standard cell, power/cell_18650 (18.4 mm
   across and 65.0 mm long) lying along x, with 0.5 mm clearance at each end
   and 0.3 mm each side;
 - the walls are 20 mm tall (as before, when the body had a floor), so the cell
@@ -67,8 +67,8 @@ import math
 
 import cadquery as cq
 
-cell = load_library("batteries/cell_18650")  # the cell this body holds: diameter, length
-clip = load_library("terminals/keystone_1107_1")  # the terminal: its sheet thickness
+cell = load_library("power/cell_18650")  # the cell this body holds: diameter, length
+clip = load_library("power/keystone_1107_1")  # the terminal: its sheet thickness
 
 # parameters, in mm
 wall = 1.0  # side and end walls

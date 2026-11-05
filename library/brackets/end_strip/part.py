@@ -63,7 +63,7 @@ Assumptions where the description is silent:
 import cadquery as cq
 
 holder = load_library("battery_holders/single_18650_holder/body")  # width, screw_y, screw_inset
-screw = load_library("fasteners/m1_2x6_countersunk")  # head and length
+screw = load_library("hardware/m1_2x6_countersunk")  # head and length
 
 # parameters, in mm
 columns = 3  # holders side by side, along y

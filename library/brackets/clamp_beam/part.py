@@ -33,8 +33,8 @@ Assumptions where the description is silent:
 """
 import cadquery as cq
 
-strip = load_library("battery_holders/end_strip")  # pillar_points, countersunk_hole
-bms = load_library("protection_boards/bms_3s_20a")  # width
+strip = load_library("brackets/end_strip")  # pillar_points, countersunk_hole
+bms = load_library("power/bms_3s_20a")  # width
 
 # parameters, in mm
 thickness = 1.5  # along z

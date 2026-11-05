@@ -1,6 +1,6 @@
-"""The power parts: the single 18650 holder, the end strip and the six-cell pack.
+"""The power parts: the single 18650 holder, the six-cell pack and their brackets.
 
-Cells, clips and screws come from vequir-standard, which ``libraries.txt``
+Cells, clips, screws and the BMS come from vequir-standard, which ``libraries.txt``
 expects beside this repository (CI clones it there).
 """
 
@@ -24,11 +24,11 @@ def _summary(result):
     return json.loads(result.files["summary"].read_text())
 
 
-def test_the_library_holds_the_holders_strips_and_packs():
+def test_the_library_holds_the_holders_packs_and_brackets():
     assert sorted(e.designation for e in discover_all(ROOT / "products")) == [
-        "battery_holders/bms_clamp", "battery_holders/clamp_beam", "battery_holders/end_strip", "battery_holders/pack_3x2",
-        "battery_holders/single_18650_holder", "battery_holders/single_18650_holder/body",
-        "protection_boards/bms_3s_20a"]
+        "battery_holders/pack_3x2", "battery_holders/single_18650_holder",
+        "battery_holders/single_18650_holder/body", "brackets/bms_clamp", "brackets/clamp_beam",
+        "brackets/end_strip"]
 
 
 def test_the_single_18650_holder_cradles_its_cell(tmp_path):
@@ -70,7 +70,7 @@ def test_the_single_18650_holder_takes_m12_screws_in_its_triangles(tmp_path):
 def test_the_end_strip_spans_three_holders_and_two_rows(tmp_path):
     """The strip: three holders long, twelve countersinks for the M1.2 screws,
     thin enough that a 6 mm screw flush in it reaches 4.5 mm into the holder."""
-    strip = _summary(build_part(LIBRARY / "battery_holders/end_strip/part.py", tmp_path / "strip"))
+    strip = _summary(build_part(LIBRARY / "brackets/end_strip/part.py", tmp_path / "strip"))
     # 1.5 mm strip plus the tabs, 3.4 mm out past its front, and the pillars 0.4 mm past them
     assert strip["bounding_box"]["size"] == pytest.approx([1.5 + 3.4 + 0.4, 3 * 21.0, 10.0])
     assert strip["regions"]["countersinks"]["count"] == 12
@@ -88,7 +88,7 @@ def test_the_clamp_beam_spans_the_bms_on_two_pillars(tmp_path):
     """1.5 mm thick, two M1.2 countersinks 7.85 mm apart (the pillars' spacing),
     and past the BMS's edges (0.2 mm clear) a 2.15 mm post at each end, as tall
     as the board is thick, with an M1.2 tap hole for a clamp."""
-    beam = _summary(build_part(LIBRARY / "battery_holders/clamp_beam/part.py", tmp_path / "beam"))
+    beam = _summary(build_part(LIBRARY / "brackets/clamp_beam/part.py", tmp_path / "beam"))
     assert beam["bounding_box"]["size"] == pytest.approx([20.0 + 2 * (0.2 + 2.15), 3.4, 1.5 + 1.2])
     assert beam["regions"]["countersinks"]["count"] == 2
     assert beam["regions"]["post_tops"]["count"] == 2
@@ -98,7 +98,7 @@ def test_the_clamp_beam_spans_the_bms_on_two_pillars(tmp_path):
 def test_the_bms_clamp_covers_the_post_and_the_board_edge(tmp_path):
     """1 mm thick, as wide as the beam, one M1.2 countersink over the post's tap
     hole, reaching 0.6 mm over the board's edge."""
-    clamp = _summary(build_part(LIBRARY / "battery_holders/bms_clamp/part.py", tmp_path / "clamp"))
+    clamp = _summary(build_part(LIBRARY / "brackets/bms_clamp/part.py", tmp_path / "clamp"))
     assert clamp["bounding_box"]["size"] == pytest.approx([1.7 + 2.15 / 2 + 0.2 + 0.6, 3.4, 1.0])
     assert clamp["regions"]["countersink"]["count"] == 1
 
@@ -133,13 +133,3 @@ def test_the_pack_joins_six_holders_with_two_strips(tmp_path):
     assert all("screw_" in c["b"] for c in clashes)
     assert sum("strip_front" in c["a"] and "screw_beam_" in c["b"] for c in clashes) == 4
     assert sum("beam_" in c["a"] and "screw_clamp_" in c["b"] for c in clashes) == 4
-
-
-def test_the_3s_bms_is_the_listed_size_with_its_pads(tmp_path):
-    """DIY Electronics' 3S protection module: 64 x 20 x 3.4 mm, a B- and a P-
-    pad at the ends, and three balance taps."""
-    summary = _summary(build_part(LIBRARY / "protection_boards/bms_3s_20a/part.py", tmp_path / "out"))
-    assert summary["bounding_box"]["size"] == pytest.approx([64.0, 20.0, 3.4])
-    assert {k: v["count"] for k, v in summary["regions"].items()} == {
-        "b_minus_pad": 1, "p_minus_pad": 1, "p_plus_pad": 1, "balance_pads": 3,
-        "terminal_holes": 6, "bottom": 1}

@@ -42,12 +42,12 @@ import cadquery as cq
 
 holder = load_library("battery_holders/single_18650_holder")  # body, cell and clips
 body = load_library("battery_holders/single_18650_holder/body")  # length, width, height
-strip = load_library("battery_holders/end_strip")  # points, thickness, joint
-screw = load_library("fasteners/m1_2x6_countersunk")  # standing up: tip on z = 0
-bms = load_library("protection_boards/bms_3s_20a")  # lying flat, its underside on z = 0
-beam = load_library("battery_holders/clamp_beam")  # along x, its countersinks on top
-clamp = load_library("battery_holders/bms_clamp")  # its hole on the z axis, the board towards +x
-short_screw = load_library("fasteners/m1_2x3_countersunk")  # standing up: tip on z = 0
+strip = load_library("brackets/end_strip")  # points, thickness, joint
+screw = load_library("hardware/m1_2x6_countersunk")  # standing up: tip on z = 0
+bms = load_library("power/bms_3s_20a")  # lying flat, its underside on z = 0
+beam = load_library("brackets/clamp_beam")  # along x, its countersinks on top
+clamp = load_library("brackets/bms_clamp")  # its hole on the z axis, the board towards +x
+short_screw = load_library("hardware/m1_2x3_countersunk")  # standing up: tip on z = 0
 
 joint = body.height  # where the two rows' bottoms meet
 end = body.length / 2  # each end face, from the centre

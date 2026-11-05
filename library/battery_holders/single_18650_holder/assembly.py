@@ -14,8 +14,8 @@ the assembly follows any change to them.
 import cadquery as cq
 
 body = load_part("body")  # open frame, centred, standing on z = 0
-cell = load_library("batteries/cell_18650")  # standing up: axis along z, negative end on z = 0
-clip = load_library("terminals/keystone_1107_1")  # plate's back on x = 0, lug on +x
+cell = load_library("power/cell_18650")  # standing up: axis along z, negative end on z = 0
+clip = load_library("power/keystone_1107_1")  # plate's back on x = 0, lug on +x
 
 # lay the cell down along +x: a quarter turn about y takes its +z axis to +x,
 # putting its negative end at x = 0; then centre it along the length, and lower
