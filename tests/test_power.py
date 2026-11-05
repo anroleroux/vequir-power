@@ -85,11 +85,14 @@ def test_the_end_strip_spans_three_holders_and_two_rows(tmp_path):
 
 
 def test_the_clamp_beam_spans_the_bms_on_two_pillars(tmp_path):
-    """As long as the BMS is wide, 1.5 mm thick, two M1.2 countersinks 7.85 mm
-    apart (the pillars' spacing)."""
+    """1.5 mm thick, two M1.2 countersinks 7.85 mm apart (the pillars' spacing),
+    and past the BMS's edges (0.2 mm clear) a 2.15 mm post at each end, as tall
+    as the board is thick, with an M1.2 tap hole for a clamp."""
     beam = _summary(build_part(LIBRARY / "battery_holders/clamp_beam/part.py", tmp_path / "beam"))
-    assert beam["bounding_box"]["size"] == pytest.approx([20.0, 3.4, 1.5])
+    assert beam["bounding_box"]["size"] == pytest.approx([20.0 + 2 * (0.2 + 2.15), 3.4, 1.5 + 1.2])
     assert beam["regions"]["countersinks"]["count"] == 2
+    assert beam["regions"]["post_tops"]["count"] == 2
+    assert beam["regions"]["post_holes"]["count"] == 2
 
 
 def test_the_pack_joins_six_holders_with_two_strips(tmp_path):
