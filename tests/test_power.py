@@ -26,7 +26,7 @@ def _summary(result):
 
 def test_the_library_holds_the_holders_strips_and_packs():
     assert sorted(e.designation for e in discover_all(ROOT / "products")) == [
-        "battery_holders/clamp_beam", "battery_holders/end_strip", "battery_holders/pack_3x2",
+        "battery_holders/bms_clamp", "battery_holders/clamp_beam", "battery_holders/end_strip", "battery_holders/pack_3x2",
         "battery_holders/single_18650_holder", "battery_holders/single_18650_holder/body",
         "protection_boards/bms_3s_20a"]
 
@@ -95,16 +95,25 @@ def test_the_clamp_beam_spans_the_bms_on_two_pillars(tmp_path):
     assert beam["regions"]["post_holes"]["count"] == 2
 
 
+def test_the_bms_clamp_covers_the_post_and_the_board_edge(tmp_path):
+    """1 mm thick, as wide as the beam, one M1.2 countersink over the post's tap
+    hole, reaching 0.6 mm over the board's edge."""
+    clamp = _summary(build_part(LIBRARY / "battery_holders/bms_clamp/part.py", tmp_path / "clamp"))
+    assert clamp["bounding_box"]["size"] == pytest.approx([1.7 + 2.15 / 2 + 0.2 + 0.6, 3.4, 1.0])
+    assert clamp["regions"]["countersink"]["count"] == 1
+
+
 def test_the_pack_joins_six_holders_with_two_strips(tmp_path):
     """Six holders in two rows of three, a strip and twelve screws at each end,
-    two clamping beams screwed onto the front strip's pillars, and the BMS on
-    the beams:
+    two clamping beams screwed onto the front strip's pillars, the BMS on the
+    beams, and a clamp screwed onto each of the beams' four posts:
     the only overlaps are the 24 screws forming their threads in the holders."""
     summary = _summary(build_part(LIBRARY / "battery_holders/pack_3x2/assembly.py", tmp_path / "out"))
     names = [c["name"] for c in summary["components"]]
     assert sum("upper_" in n or "lower_" in n for n in names) == 6
     assert sum("strip_" in n for n in names) == 2
-    assert sum("screw_" in n for n in names) == 24 + 4
+    assert sum("screw_" in n for n in names) == 24 + 4 + 4
+    assert sum("clamp_" in n and "screw" not in n for n in names) == 4
     assert sum("beam_" in n and "screw" not in n for n in names) == 2
     assert sum("bms" in n for n in names) == 1
     # the 64 mm BMS overhangs the 63 mm pack by 0.5 mm each side
@@ -113,11 +122,17 @@ def test_the_pack_joins_six_holders_with_two_strips(tmp_path):
     contacts = {(c["a"].split("/")[-1], c["b"].split("/")[-1]) for c in summary["contacts"]}
     assert {("strip_front", "beam_1"), ("strip_front", "beam_2"),
             ("beam_1", "bms"), ("beam_2", "bms")} <= contacts
+    # each clamp bears on its post and 0.6 mm of the board's edge
+    for i in (1, 2):
+        for j in (1, 2):
+            assert {(f"beam_{i}", f"clamp_{i}_{j}"), (f"clamp_{i}_{j}", "bms")} <= contacts
     clashes = summary["interference"]
-    # each screw forming its thread: 24 in the holders, 4 in the front strip's pillars
-    assert len(clashes) == 28
+    # each screw forming its thread: 24 in the holders, 4 in the front strip's
+    # pillars and 4 in the beams' posts
+    assert len(clashes) == 32
     assert all("screw_" in c["b"] for c in clashes)
     assert sum("strip_front" in c["a"] and "screw_beam_" in c["b"] for c in clashes) == 4
+    assert sum("beam_" in c["a"] and "screw_clamp_" in c["b"] for c in clashes) == 4
 
 
 def test_the_3s_bms_is_the_listed_size_with_its_pads(tmp_path):

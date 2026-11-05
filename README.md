@@ -15,7 +15,8 @@ Product page: **[anroleroux.co.za/vequir-power](https://anroleroux.co.za/vequir-
 | `battery_holders/single_18650_holder/body` | part: the open plastic frame that cradles one 18650 |
 | `battery_holders/end_strip` | part: the strip across one end of six holders, with mounting tabs and eight square M1.2 pillars |
 | `battery_holders/clamp_beam` | part: a beam across the 3S BMS, screwed onto two of the end strip's pillars, the board resting on it between two posts with M1.2 tap holes for clamps |
-| `battery_holders/pack_3x2` | assembly: six single holders, 3 × 2, joined by two end strips and 24 M1.2 screws, with the 3S BMS on two clamping beams on the front strip's pillars |
+| `battery_holders/bms_clamp` | part: a little clamp on a clamping beam's post, holding the BMS's edge down with an M1.2 × 3 screw |
+| `battery_holders/pack_3x2` | assembly: six single holders, 3 × 2, joined by two end strips and 24 M1.2 screws, with the 3S BMS on two clamping beams on the front strip's pillars, held by four clamps |
 | `protection_boards/bms_3s_20a` | part: DIY Electronics' 3S Li-ion protection module (BMS), 20 A, 64 × 20 × 3.4 mm |
 
 ```
