@@ -1,6 +1,6 @@
 # vequir-power
 
-VequIR's battery holders and packs, and the protection boards that guard them, as a parts library for the
+VequIR's battery holders, packs and brackets, as a parts library for the
 [CAD tool](https://github.com/anroleroux/vequir-standard/tree/main/tools/cad): the pack assemblies and the parts they are made of, written as
 CadQuery B-rep code from plain-language descriptions and built and checked as
 exact solids.
@@ -13,9 +13,10 @@ Product page: **[anroleroux.co.za/vequir-power](https://anroleroux.co.za/vequir-
 | --- | --- |
 | `battery_holders/single_18650_holder` | assembly: a holder body, its cell and a Keystone 1107-1 clip at each end |
 | `battery_holders/single_18650_holder/body` | part: the open plastic frame that cradles one 18650 |
-| `battery_holders/end_strip` | part: the strip across one end of six holders, with mounting tabs |
-| `battery_holders/pack_3x2` | assembly: six single holders, 3 × 2, joined by two end strips and 24 M1.2 screws |
-| `protection_boards/bms_3s_20a` | part: DIY Electronics' 3S Li-ion protection module (BMS), 20 A, 64 × 20 × 3.4 mm |
+| `battery_holders/pack_3x2` | assembly: six single holders, 3 × 2, joined by two end strips and 24 M1.2 screws, with the 3S BMS (from vequir-standard) on two clamping beams on the front strip's pillars, held by four clamps |
+| `brackets/end_strip` | part: the strip across one end of six holders, with mounting tabs and eight square M1.2 pillars |
+| `brackets/clamp_beam` | part: a beam across the 3S BMS, screwed onto two of the end strip's pillars, the board resting on it between two posts with M1.2 tap holes for clamps |
+| `brackets/bms_clamp` | part: a little clamp on a clamping beam's post, holding the BMS's edge down with an M1.2 × 3 screw |
 
 ```
 library/<category>/category.md                     "# Title", then a blurb
@@ -25,11 +26,11 @@ library/<category>/<assembly>/assembly.py          optional: its parts placed to
 library/<category>/<assembly>/<part>/part.py       its parts
 ```
 
-The cell, the clips and the screws are standard parts from
+The cell, the clips, the screws and the BMS are bought-in parts from
 [vequir-standard](https://github.com/anroleroux/vequir-standard), which
 `libraries.txt` names (`../vequir-standard/library`): the body takes
-`load_library("batteries/cell_18650")` and
-`load_library("terminals/keystone_1107_1")` and sizes its cavity and clip
+`load_library("power/cell_18650")` and
+`load_library("power/keystone_1107_1")` and sizes its cavity and clip
 slots from them. [vequir-unit](https://github.com/anroleroux/vequir-unit)'s
 PB6 places `battery_holders/pack_3x2`. A change here moves it: rebuild it
 before pushing, and push on the same branch name.
