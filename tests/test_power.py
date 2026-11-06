@@ -85,11 +85,13 @@ def test_the_end_strip_spans_three_holders_and_two_rows(tmp_path):
 
 
 def test_the_strip_3x1_spans_three_holders_in_one_row(tmp_path):
-    """The plain strip: three holders long, 5 mm tall, six countersinks for the
-    M1.2 screws, 1.5 mm thick so a 6 mm screw flush in it reaches 4.5 mm in."""
+    """The strip: three holders long, 5 mm tall, six countersinks for the M1.2
+    screws, 1.5 mm thick so a 6 mm screw flush in it reaches 4.5 mm in, and two
+    tabs on its top edge, 3.4 mm out past its front, countersunk on top."""
     strip = _summary(build_part(LIBRARY / "brackets/strip_3x1/part.py", tmp_path / "strip"))
-    assert strip["bounding_box"]["size"] == pytest.approx([1.5, 3 * 21.0, 5.0])
+    assert strip["bounding_box"]["size"] == pytest.approx([1.5 + 3.4, 3 * 21.0, 5.0])
     assert strip["regions"]["countersinks"]["count"] == 6
+    assert strip["regions"]["tab_countersinks"]["count"] == 4  # two per tab
 
 
 def test_the_3s_pack_joins_three_holders_with_two_strips(tmp_path):
