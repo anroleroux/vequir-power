@@ -75,6 +75,14 @@ def test_the_end_strip_spans_three_holders_and_two_rows(tmp_path):
     assert strip["bounding_box"]["size"] == pytest.approx([1.5 + 3.4 + 0.4, 3 * 21.0, 10.0])
     assert strip["regions"]["countersinks"]["count"] == 12
     assert strip["regions"]["tab_countersinks"]["count"] == 4  # two per tab
+    # the tabs sit between the cells, on the joints between holders (y = +/-10.5),
+    # their holes a quarter of the 10 mm tab either side of each joint
+    import cadquery as cq
+    shape = cq.Shape.importBrep(str(tmp_path / "strip" / "part.brep"))
+    tab_cones = [f for f in shape.Faces()
+                 if f.geomType() == "CONE" and f.BoundingBox().zlen < 1.5]
+    assert sorted(round(f.Center().y, 3) for f in tab_cones) == \
+        pytest.approx([-13.0, -8.0, 8.0, 13.0])
     # eight square pillars, 2.15 mm across, at the middle slot's ends and the outer
     # slots' inside ends, flush with the strip's edges, each with a 0.95 mm M1.2 tap hole
     assert strip["regions"]["pillar_tops"]["count"] == 8
