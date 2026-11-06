@@ -26,9 +26,9 @@ def _summary(result):
 
 def test_the_library_holds_the_holders_packs_and_brackets():
     assert sorted(e.designation for e in discover_all(ROOT / "products")) == [
-        "battery_holders/pack_3x2", "battery_holders/single_18650_holder",
-        "battery_holders/single_18650_holder/body", "brackets/bms_clamp", "brackets/clamp_beam",
-        "brackets/end_strip"]
+        "battery_holders/pack_3x1", "battery_holders/pack_3x2",
+        "battery_holders/single_18650_holder", "battery_holders/single_18650_holder/body",
+        "brackets/bms_clamp", "brackets/clamp_beam", "brackets/end_strip", "brackets/strip_3x1"]
 
 
 def test_the_single_18650_holder_cradles_its_cell(tmp_path):
@@ -82,6 +82,30 @@ def test_the_end_strip_spans_three_holders_and_two_rows(tmp_path):
     # three material-saving slots, 10 x 6 mm with round ends, through the 1.5 mm strip
     full = 1.5 * 3 * 21.0 * 10.0 + 2 * 3.4 * 10.0 * 1.5 + 8 * 2.15 ** 2 * 5.3
     assert strip["volume_mm3"] < full - 3 * (4 * 6 + math.pi * 9) * 1.5
+
+
+def test_the_strip_3x1_spans_three_holders_in_one_row(tmp_path):
+    """The plain strip: three holders long, 5 mm tall, six countersinks for the
+    M1.2 screws, 1.5 mm thick so a 6 mm screw flush in it reaches 4.5 mm in."""
+    strip = _summary(build_part(LIBRARY / "brackets/strip_3x1/part.py", tmp_path / "strip"))
+    assert strip["bounding_box"]["size"] == pytest.approx([1.5, 3 * 21.0, 5.0])
+    assert strip["regions"]["countersinks"]["count"] == 6
+
+
+def test_the_3s_pack_joins_three_holders_with_two_strips(tmp_path):
+    """Three holders in a row, a strip and six screws at each end: the only
+    overlaps are the 12 screws forming their threads in the holders."""
+    summary = _summary(build_part(LIBRARY / "battery_holders/pack_3x1/assembly.py", tmp_path / "out"))
+    names = [c["name"] for c in summary["components"]]
+    assert sum("holder_" in n for n in names) == 3
+    assert sum("strip_" in n for n in names) == 2
+    assert sum("screw_" in n for n in names) == 12
+    contacts = {(c["a"].split("/")[-1], c["b"].split("/")[-1]) for c in summary["contacts"]}
+    for c in (1, 2, 3):
+        assert {(f"holder_{c}", "strip_front"), (f"holder_{c}", "strip_back")} <= contacts
+    clashes = summary["interference"]
+    assert len(clashes) == 12
+    assert all("holder_" in c["a"] and "screw_" in c["b"] for c in clashes)
 
 
 def test_the_clamp_beam_spans_the_bms_on_two_pillars(tmp_path):
